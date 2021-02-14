@@ -6,6 +6,7 @@ library(tidyverse)
 #Load cleaned datasets
 vacc_will_subset <- read.csv("./Data/vacc_will.csv", stringsAsFactors = FALSE, header = TRUE)
 meas_subset <- read.csv("./Data/measures_att.csv", stringsAsFactors = FALSE, header = TRUE)
+municipalities_data <- read.csv("./Data/region_data.csv", stringsAsFactors = FALSE, header = TRUE)
   
 #Plots
 vacc_will_agecoh_plot <- filter(vacc_will_subset, Subgroup_category == "Age") %>%
@@ -19,6 +20,10 @@ vacc_will_geo_plot <- filter(vacc_will_subset, Subgroup_category == "Region") %>
   geom_bar(aes(x = Date, y = Value, fill = Response), stat = "identity", position = "stack") +
   facet_wrap(facets = vars(Subgroup)) +
   scale_fill_manual(values = c("#00AFBB", "#E7B800", "#FC4E07", "#E7B900"))
+
+vacc_will_byregion <- filter(vacc_will_subset, (Subgroup_category == "Region" & Response == "Willing")) %>%
+  ggplot(data = ., aes(x = Date, y = Value, group = Subgroup, colour = Subgroup)) +
+  geom_line() 
 
 vacc_will_edu_plot <- filter(vacc_will_subset, Subgroup_category == "Education") %>%
   ggplot(data = ., ) +
@@ -62,9 +67,18 @@ visit_behavior_byage <- filter(meas_subset, (Response == "Max_guests_@home" & Su
   facet_wrap(facets = vars(Subgroup)) +
   ylim(0,100)
 
+map_plot <- filter(municipalities_data, Date == "28/09/2020") %>%
+  ggplot(data = municipalities_data) +
+  geom_sf(aes(fill = Willing)) +
+  scale_fill_viridis_c() +
+  theme_void()
+
+print(map_plot)
+
 
 print(vacc_will_agecoh_plot)
 print(vacc_will_geo_plot)
+print(vacc_will_byregion)
 print(vacc_will_edu_plot)
 print(vacc_will_gender_plot)
 print(meas_sup_byage)
