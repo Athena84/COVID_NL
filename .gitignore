@@ -1,4 +1,6 @@
 data/
 www/
 .Rproj.user/
+.RData
+.RHistory
 COVID_NL.Rproj
