@@ -7,7 +7,9 @@ library(tidyverse)
 vacc_will_subset <- read.csv("./Data/vacc_will.csv", stringsAsFactors = FALSE, header = TRUE)
 meas_subset <- read.csv("./Data/measures_att.csv", stringsAsFactors = FALSE, header = TRUE)
 municipalities_data <- read.csv("./Data/region_data.csv", stringsAsFactors = FALSE, header = TRUE)
-  
+ 
+region_data <- st_read("./Data/region_data.shp", stringsAsFactors = FALSE)
+ 
 #Plots
 vacc_will_agecoh_plot <- filter(vacc_will_subset, Subgroup_category == "Age") %>%
   ggplot(data = ., ) +
@@ -67,14 +69,15 @@ visit_behavior_byage <- filter(meas_subset, (Response == "Max_guests_@home" & Su
   facet_wrap(facets = vars(Subgroup)) +
   ylim(0,100)
 
-map_plot <- filter(municipalities_data, Date == "28/09/2020") %>%
-  ggplot(data = municipalities_data) +
-  geom_sf(aes(fill = Willing)) +
+map_plot <- filter(region_data, (Measure == "Vaccination")) %>%
+  ggplot(data = .) +
+  geom_sf(aes(fill = Value)) +
   scale_fill_viridis_c() +
   theme_void()
 
 print(map_plot)
 
+print(region_data)
 
 print(vacc_will_agecoh_plot)
 print(vacc_will_geo_plot)
