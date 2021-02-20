@@ -5,6 +5,8 @@ library(shinythemes)
 library(shinyWidgets)
 library(tidyverse)
 library(sf)
+library(rsconnect)
+#rsconnect::deployApp()
 
 #Load datasets (pre-processing of raw data in datacleaner.R)
 vacc_will_subset <- read.csv("./Data/vacc_will.csv", stringsAsFactors = FALSE, header = TRUE)

@@ -138,5 +138,10 @@ map_plot <- filter(region_data, (Measure == "Vaccination" & Date == "2021-01-25"
   theme_void()
 
 print(map_plot)
-
 str(region_data)
+
+top_bottom_regions <- filter(region_data, Measure == "Vaccination") %>%
+    arrange(., desc(Value)) %>%
+    select(., Region, Value)
+
+print(top_bottom_regions)[1:3, c("Region", "Value")]
