@@ -9,7 +9,7 @@ function(input, output){
   top_bottom_regions <- reactive(
     filter_vacc() %>%
       arrange(., desc(Value)) %>%
-      select(., Region)
+      select(., Region) 
   )
   
   

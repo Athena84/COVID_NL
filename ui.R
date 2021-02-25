@@ -13,14 +13,14 @@ fluidPage(
         column(6,
                h4("Geographical differences in support"),
                br(),
-               plotOutput("geoPlot")
+               plotOutput("GeoPlot")
         ),
         column(2,
                br(),
                br(),
                h4("Top 3"),
-               #textOutput("region1"),
-               #textOutput("region2"),
+               textOutput("region1"),
+               textOutput("region2"),
                #textOutput("region3"),
         
                br(),
@@ -31,7 +31,7 @@ fluidPage(
            h4("..."),
            selectInput(inputId = 'Measure_geo',
                        label = 'Compare support for measure',
-                       choices = region_data$Measure,
+                       choices = unique(region_data$Measure),
                        selected = "Vaccination"
                        )  
         )
@@ -50,12 +50,12 @@ fluidPage(
           h4("..."),
           selectInput(inputId = 'Subgroup_cat',
                       label = 'Compare between groups based on',
-                      choices = meas_subset$Subgroup_category,
+                      choices = unique(meas_subset$Subgroup_category),
                       selected = "Age"
                       ),
           selectInput(inputId = 'Measure_comp',
                       label = 'Compare support for',
-                      choices = meas_subset$Measure, 
+                      choices = unique(meas_subset$Measure), 
                       selected = "Vaccination"
                       )
         )
@@ -73,7 +73,7 @@ fluidPage(
           h4("..."), 
           selectInput(inputId = 'Subgroup_meas',
                       label = 'Compare support for measure for specific group',
-                      choices = meas_subset$Subgroup,
+                      choices = unique(meas_subset$Subgroup),
                       selected = "70+"
                       )
         )
@@ -93,7 +93,7 @@ fluidPage(
           h4("..."), 
           selectInput(inputId = 'Subgroup_vacc',
                       label = 'Compare development over time of willingness for vaccination for based on specific group',
-                      choices = vacc_will_subset$Subgroup,
+                      choices = unique(vacc_will_subset$Subgroup),
                       selected = "70+"
                       )
         )

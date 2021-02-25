@@ -131,7 +131,7 @@ st_write(region_data, "./Data/region_data.shp", append = FALSE)
 
 
 #Test plot maps 
-map_plot <- filter(region_data, (Measure == "Vaccination" & Date == "2021-01-25")) %>%
+map_plot <- filter(region_data, (Measure == "Vaccination")) %>%
   ggplot(data = .) +
   geom_sf(aes(fill = Value)) +
   scale_fill_viridis_c() +
