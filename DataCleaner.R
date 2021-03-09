@@ -13,6 +13,12 @@ colnames(raw_df) = c("Date", "Region_code", "Region", "Subgroup_category", "Subg
 raw_df$Subgroup_category <- gsub("Leeftijd", "Age", raw_df$Subgroup_category, fixed = TRUE)
 raw_df$Subgroup_category <- gsub("Geslacht", "Gender", raw_df$Subgroup_category, fixed = TRUE)
 raw_df$Subgroup_category <- gsub("Opleiding", "Education level", raw_df$Subgroup_category, fixed = TRUE)
+raw_df$Subgroup <- gsub("16-24", "Aged 16-24", raw_df$Subgroup, fixed = TRUE)
+raw_df$Subgroup <- gsub("25-39", "Aged 25-39", raw_df$Subgroup, fixed = TRUE)
+raw_df$Subgroup <- gsub("40-54", "Aged 40-54", raw_df$Subgroup, fixed = TRUE)
+raw_df$Subgroup <- gsub("55-69", "Aged 55-69", raw_df$Subgroup, fixed = TRUE)
+raw_df$Subgroup <- gsub("70+", "Aged 70+", raw_df$Subgroup, fixed = TRUE)
+
 raw_df$Subgroup <- gsub("Man", "Male", raw_df$Subgroup, fixed = TRUE)
 raw_df$Subgroup <- gsub("Vrouw", "Female", raw_df$Subgroup, fixed = TRUE)
 raw_df$Subgroup <- gsub("Hoog", "Higher education", raw_df$Subgroup, fixed = TRUE)
@@ -80,7 +86,8 @@ vacc_will_corrections <- filter(vacc_will_subset, Response == "Already vaccinate
 
 vacc_will_subset <- left_join(vacc_will_subset, vacc_will_corrections, by = c("Date", "Subgroup")) %>%
   mutate(., Value = Value - ifelse(Response == "Willing", Correction, 0)) %>%
-  select(., c("Date", "Region_code", "Subgroup_category", "Subgroup", "Response", "Value"))
+  select(., c("Date", "Region_code", "Subgroup_category", "Subgroup", "Response", "Value")) %>%
+  filter(., Value != 0)
 
 
 #==========Load map data and match to dataset regions
@@ -107,12 +114,15 @@ region_borders <- left_join(municipalities_borders, municipality_reg_mapping, by
   summarize(., Region = unique(Region), Region_geom = st_union(geometry, by_feature = FALSE))
 
 #Match measure support for the last period per security region 
-region_data <- filter(meas_supp_subset, Subgroup_category == "Region") %>%
+region_data_charts <- filter(meas_supp_subset, Subgroup_category == "Region") %>%
   filter(., Date == "2021-01-25") %>%
   select(., c("Region_code", Measure = "Response", "Value")) %>%
   left_join(region_borders, ., by = c("Region_code")) %>%
   select(., c("Region", "Measure", "Value"))
 
+#Save regional split for last period as separate data file
+region_data_lists <- filter(meas_supp_subset, Subgroup_category == "Region" & Date == "2021-01-25") %>%
+  select(., c(Region = "Subgroup", Measure = "Response", "Value"))
 
 #Remove region as subgroup and column from vaccine and measures subsets
 vacc_will_subset <- filter(vacc_will_subset, Subgroup_category != "Region") %>%
@@ -125,23 +135,5 @@ meas_supp_subset <- filter(meas_supp_subset, Subgroup_category != "Region") %>%
 #==========Write to smaller files for Shiny app
 write.csv(meas_supp_subset, "./Data/measures_sup.csv", row.names = FALSE)
 write.csv(vacc_will_subset, "./Data/vacc_will.csv", row.names = FALSE)
-write.csv(region_data, "./Data/region_data.csv", row.names = FALSE)
-
-st_write(region_data, "./Data/region_data.shp", append = FALSE)
-
-
-#Test plot maps 
-map_plot <- filter(region_data, (Measure == "Vaccination")) %>%
-  ggplot(data = .) +
-  geom_sf(aes(fill = Value)) +
-  scale_fill_viridis_c() +
-  theme_void()
-
-print(map_plot)
-str(region_data)
-
-top_bottom_regions <- filter(region_data, Measure == "Vaccination") %>%
-    arrange(., desc(Value)) %>%
-    select(., Region, Value)
-
-print(top_bottom_regions)[1:3, c("Region", "Value")]
+write.csv(region_data_lists, "./Data/region_data_lists.csv", row.names = FALSE)
+st_write(region_data_charts, "./Data/region_data_charts.shp", append = FALSE)

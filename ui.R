@@ -1,8 +1,7 @@
 
 
 fluidPage(
-  theme = shinytheme("cerulean"),
-  
+
   titlePanel("How do the Dutch feel about their government's COVID measures?"),
   
   br(),
@@ -10,44 +9,46 @@ fluidPage(
     #========== Tab 1
     tabPanel(span("Geographical differences in support", title = "Choose one Covid measure and compare support between different regions in the Netherlands"), 
       fluidRow(
-        column(6,
-               h4("Geographical differences in support"),
+        column(1),
+        column(8,
+               #h4("Geographical differences in support"),
                br(),
-               plotOutput("GeoPlot")
+               plotOutput("GeoPlot"),
+               br(),
+               br(),
+               selectInput(inputId = 'Measure_geo',
+                           label = 'Compare support for measure',
+                           choices = unique(region_data_lists$Measure),
+                           selected = "Vaccination"
+               )  
         ),
         column(2,
                br(),
                br(),
-               h4("Top 3"),
+               h4("Regions with highest support"),
                textOutput("region1"),
                textOutput("region2"),
-               #textOutput("region3"),
+               textOutput("region3"),
         
                br(),
-               h4("Bottom 3"),
-               "[...]"
+               h4("Regions with lowest support"),
+               textOutput("region4"),
+               textOutput("region5"),
+               textOutput("region6")
         ),
-        column(3, offset = 1,
-           h4("..."),
-           selectInput(inputId = 'Measure_geo',
-                       label = 'Compare support for measure',
-                       choices = unique(region_data$Measure),
-                       selected = "Vaccination"
-                       )  
-        )
+        column(1)
       )
     ),
     
     #========== Tab 2      
     tabPanel(span("Compare groups of people", title = "Choose one Covid measure and compare the support of groups of people based on their age, gender of level of education"),
       fluidRow(
-        column(8,
+        column(1),
+        column(10,
           br(),
-          plotOutput("Meas_beh_bysubgroup")
-        ),
-        column(3, offset = 1,
-          #style = "border: 1px dotted black;",
-          h4("..."),
+          plotOutput("Meas_beh_bysubgroup"),
+          br(),
+          br(),
           selectInput(inputId = 'Subgroup_cat',
                       label = 'Compare between groups based on',
                       choices = unique(meas_subset$Subgroup_category),
@@ -58,25 +59,27 @@ fluidPage(
                       choices = unique(meas_subset$Measure), 
                       selected = "Vaccination"
                       )
-        )
+        ),
+        column(1)
       )
     ),
     
     #========== Tab 3
     tabPanel(span("Compare measures", title = "Choose one specific group of people and compare their support for different measures"),
       fluidRow(
+        column(1),
         column(8,       
           br(),
-          plotOutput("Beh_subgroup_bymeasure")
-        ),
-        column(3, offset = 1,
-          h4("..."), 
+          plotOutput("Beh_subgroup_bymeasure"),
+          br(),
+          br(),
           selectInput(inputId = 'Subgroup_meas',
-                      label = 'Compare support for measure for specific group',
+                      label = 'Support over time for specific group',
                       choices = unique(meas_subset$Subgroup),
-                      selected = "70+"
+                      selected = "Aged 16-24"
                       )
-        )
+        ),
+        column(1)
       )
     ),
     
@@ -84,19 +87,21 @@ fluidPage(
     
     tabPanel(span("Vaccination willingness details", title = "Explore the details of vaccination willingness"),
       fluidRow(
-        column(8,       
+        column(1),
+        column(10,       
           br(),
-          
-          plotOutput("Vacc_Detail")
-        ),
-        column(3, offset = 1,
-          h4("..."), 
+          h2("Will the Dutch population reach the critical 80% treshold vaccination level?"),
+          br(),
+          plotOutput("Vacc_Detail"),
+          br(),
+          br(),
           selectInput(inputId = 'Subgroup_vacc',
-                      label = 'Compare development over time of willingness for vaccination for based on specific group',
+                      label = 'Willingness over time for specific group',
                       choices = unique(vacc_will_subset$Subgroup),
-                      selected = "70+"
+                      selected = "Aged 16-24"
                       )
-        )
+        ),
+        column(1)
     )
     )
   )

@@ -1,36 +1,55 @@
 
 function(input, output){
-  
-  #====== tab1
-  
-  filter_vacc <- reactive(
-    filter(region_data, Measure == input$Measure_geo)
+
+    top_regions <- reactive(
+    filter(region_data_lists, Measure == input$Measure_geo) %>%
+    arrange(., desc(Value)) %>%
+    select(., Region) 
   )
-  top_bottom_regions <- reactive(
-    filter_vacc() %>%
-      arrange(., desc(Value)) %>%
+  bottom_regions <- reactive(
+    filter(region_data_lists, Measure == input$Measure_geo) %>%
+      arrange(., Value) %>%
       select(., Region) 
   )
   
+  #====== tab1
+  
+  my_breaks <- c(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100)
   
   output$GeoPlot <- renderPlot(
-    filter_vacc() %>%
+    filter(region_data_charts, Measure == input$Measure_geo) %>%
       ggplot(data = .) +
       geom_sf(aes(fill = Value)) +
-      scale_fill_viridis_c() +
+      scale_fill_gradientn(colours = rev(brewer.pal(6, "Reds")),
+                           name = "% of population in support of measure",
+                           breaks = my_breaks,
+                           labels = my_breaks,
+                           limits = c(30,100)) +
       theme_void()
   )
   
   output$region1 <- renderPrint({
-    top_bottom_regions() %>%
+    top_regions() %>%
       .[1, "Region"]
   })
   output$region2 <- renderPrint({
-    top_bottom_regions() %>%
+    top_regions() %>%
       .[2, "Region"]
   })
   output$region3 <- renderPrint({
-    top_bottom_regions() %>%
+    top_regions() %>%
+      .[3, "Region"]
+  })
+  output$region4 <- renderPrint({
+    bottom_regions() %>%
+      .[1, "Region"]
+  })
+  output$region5 <- renderPrint({
+    bottom_regions() %>%
+      .[2, "Region"]
+  })
+  output$region6 <- renderPrint({
+    bottom_regions() %>%
       .[3, "Region"]
   })
   
@@ -43,9 +62,9 @@ function(input, output){
       scale_color_brewer(palette = "Dark2") +
       theme_minimal() +
       theme(
-        axis.text.x = element_text(size = 14, angle = 90),
-        axis.text.y = element_text(size = 14),
-        legend.text = element_text(size = 14),
+        axis.text.x = element_text(size = 16, angle = 0),
+        axis.text.y = element_text(size = 16),
+        legend.text = element_text(size = 16),
         legend.position = "bottom",
         legend.title=element_blank()
       ) +
@@ -64,9 +83,9 @@ function(input, output){
       scale_color_brewer(palette = "Dark2") +
       theme_minimal() +
       theme(
-        axis.text.x = element_text(size = 14, angle = 90),
-        axis.text.y = element_text(size = 14),
-        legend.text = element_text(size = 14),
+        axis.text.x = element_text(size = 16, angle = 0),
+        axis.text.y = element_text(size = 16),
+        legend.text = element_text(size = 16),
         legend.position = "bottom",
         legend.title=element_blank()
       ) +
@@ -78,20 +97,26 @@ function(input, output){
   #======= tab4
   output$Vacc_Detail <- renderPlot(
     filter(vacc_will_subset, Subgroup == input$Subgroup_vacc) %>%
+      group_by(Date) %>%
+      arrange(Date, desc(Response)) %>%
+      mutate(lab_ypos = cumsum(Value) - 0.5 * Value) %>%
       ggplot(data = ., aes(x = Date, y = Value)) +
-      geom_bar(aes(group = Response, fill = Response), stat = "identity", position = position_fill()) +
-      #geom_text(aes(group = Response, label = Value), colour = "white") +
+      geom_col(aes(fill = Response), width = 0.8) +
+      geom_text(aes(y = lab_ypos, label = Value, group = Response), colour = "white", size = 5) +
       theme_minimal() +
       theme(
-        axis.text.x = element_text(size = 14, angle = 45),
-        axis.text.y = element_text(size = 14),
+        axis.text.x = element_text(size = 14, angle = 30),
+        axis.text.y = element_blank(),
         legend.text = element_text(size = 14),
         legend.position = "bottom",
-        legend.title=element_blank()
+        legend.title=element_blank(),
+        panel.grid = element_blank()
       ) +
       xlab("") +
       ylab("") +
-      scale_fill_manual(values = c("#d1495b", "#8d96a3", "#00798c", "#66a182"))
+      scale_fill_manual(values = c("#d1495b", "#8d96a3", "#00798c", "#66a182")) +
+      geom_hline(yintercept = 80, linetype="dashed", color = "black") +
+      geom_text(aes(0, 0.8, label = "80%", hjust = 10)) 
   )
   
 }
