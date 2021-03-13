@@ -67,7 +67,7 @@ navbarPage(
                br(),
                selectInput(inputId = 'Measure_geo',
                            label = 'Compare support for measure',
-                           choices = unique(region_data_lists$Measure),
+                           choices = unique(region_data_charts$Measure),
                            selected = "Vaccination"
                )  
         ),
@@ -99,7 +99,7 @@ navbarPage(
           br(),
           selectInput(inputId = 'Subgroup_cat',
                       label = 'Compare between groups based on',
-                      choices = unique(meas_subset$Subgroup_category),
+                      choices = c("Age", "Gender", "Education level"),
                       selected = "Age"
                       ),
           selectInput(inputId = 'Measure_comp',
@@ -223,6 +223,7 @@ navbarPage(
                "Percentage of the sample (not) being willing to take the vaccination as reported in all cohorts of the survey.", br(),
                "Split based on based on the subgroups of the population representated in the survey.", br(),
                br(),
+               "Note that in November and December there was a campaign by the Dutch government to promote vaccine safety", br(),
                "Data source (Dutch): ", a("RIVM", href = "https://www.rivm.nl/gedragsonderzoek/maatregelen-welbevinden/over-dit-onderzoek")
         ),
         column(1)

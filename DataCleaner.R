@@ -13,17 +13,18 @@ colnames(raw_df) = c("Date", "Region_code", "Region", "Subgroup_category", "Subg
 raw_df$Subgroup_category <- gsub("Leeftijd", "Age", raw_df$Subgroup_category, fixed = TRUE)
 raw_df$Subgroup_category <- gsub("Geslacht", "Gender", raw_df$Subgroup_category, fixed = TRUE)
 raw_df$Subgroup_category <- gsub("Opleiding", "Education level", raw_df$Subgroup_category, fixed = TRUE)
+raw_df$Subgroup_category <- gsub("Alle", "All", raw_df$Subgroup_category, fixed = TRUE)
 raw_df$Subgroup <- gsub("16-24", "Aged 16-24", raw_df$Subgroup, fixed = TRUE)
 raw_df$Subgroup <- gsub("25-39", "Aged 25-39", raw_df$Subgroup, fixed = TRUE)
 raw_df$Subgroup <- gsub("40-54", "Aged 40-54", raw_df$Subgroup, fixed = TRUE)
 raw_df$Subgroup <- gsub("55-69", "Aged 55-69", raw_df$Subgroup, fixed = TRUE)
 raw_df$Subgroup <- gsub("70+", "Aged 70+", raw_df$Subgroup, fixed = TRUE)
-
 raw_df$Subgroup <- gsub("Man", "Male", raw_df$Subgroup, fixed = TRUE)
 raw_df$Subgroup <- gsub("Vrouw", "Female", raw_df$Subgroup, fixed = TRUE)
 raw_df$Subgroup <- gsub("Hoog", "Higher education", raw_df$Subgroup, fixed = TRUE)
 raw_df$Subgroup <- gsub("Midden", "Middle education", raw_df$Subgroup, fixed = TRUE)
 raw_df$Subgroup <- gsub("Laag", "Lower education", raw_df$Subgroup, fixed = TRUE)
+raw_df$Subgroup <- gsub("Totaal", "Total population", raw_df$Subgroup, fixed = TRUE)
 raw_df$Response_category <- gsub("Draagvlak", "Support", raw_df$Response_category, fixed = TRUE)
 raw_df$Response_category <- gsub("Naaste_omgeving", "Adherence_observed", raw_df$Response_category, fixed = TRUE)
 raw_df$Response_category <- gsub("Helpen_regels", "Belief_efficacy", raw_df$Response_category, fixed = TRUE)
@@ -45,15 +46,13 @@ raw_df$Response <- gsub("Nee", "Not willing", raw_df$Response, fixed = TRUE)
 raw_df$Response <- gsub("Weet_niet", "Not yet decided", raw_df$Response, fixed = TRUE)
 raw_df$Response <- gsub("Al_gevaccineerd", "Already vaccinated", raw_df$Response, fixed = TRUE)
 
-#Remove total rows
-raw_df <-  filter(raw_df, !(Region == "Nederland" & Subgroup_category == "Alle"))
 
 #Remove some measures with insufficient data or not so interesting outcomes
 raw_df <- filter(raw_df, !(Response %in% c("Hoest_niest_in_elleboog", "Thuisgewerkte_uren", "Wash_hands_frequently", "Mask_public_transport", "Symptoms_quarantine",  "Symptoms_test", "Avoid_crowds")))
 
 #Combine region as a subgroup similar to structure of age/gender/education
-raw_df$Subgroup_category <- ifelse(raw_df$Subgroup_category == "Alle", "Region", raw_df$Subgroup_category)
-raw_df$Subgroup <- ifelse(raw_df$Subgroup == "Totaal", raw_df$Region, raw_df$Subgroup)
+raw_df$Subgroup_category <- ifelse((raw_df$Subgroup_category == "All" & raw_df$Region != "Nederland"), "Region", raw_df$Subgroup_category)
+raw_df$Subgroup <- ifelse((raw_df$Subgroup == "Total population" & raw_df$Region != "Nederland"), raw_df$Region, raw_df$Subgroup)
 
 #Remove redundant region column
 raw_df <- select(raw_df, c("Date", "Region_code", "Subgroup_category", "Subgroup", "Response_category", "Response", "Value"))
@@ -63,6 +62,7 @@ raw_df <- select(raw_df, c("Date", "Region_code", "Subgroup_category", "Subgroup
 
 #Filter out vaccination (as only support attitude known) and filter interesting response categories
 #Remove region as subgroup and column
+#On purpose leaving in the overall total row
 meas_att_subset <- filter(raw_df, Response != "Willing") %>%
   filter(., (Response_category == "Support" | Response_category == "Adherence_observed" | Response_category == "Adherence_self")) %>%
   filter(., Subgroup_category != "Region") %>%

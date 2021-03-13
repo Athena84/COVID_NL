@@ -15,5 +15,5 @@ vacc_will_subset <- read.csv("./Data/vacc_will.csv", stringsAsFactors = FALSE, h
 vacc_will_subset$Response <- factor(vacc_will_subset$Response, levels = c("Not willing", "Not yet decided", "Willing", "Already vaccinated"))
 meas_subset <- read.csv("./Data/measures_sup.csv", stringsAsFactors = FALSE, header = TRUE)
 att_subset <- read.csv("./Data/measures_att.csv", stringsAsFactors = FALSE, header = TRUE)
-region_data_lists <- read.csv("./Data/region_data_lists.csv", stringsAsFactors = FALSE, header = TRUE)
+#region_data_lists <- read.csv("./Data/region_data_lists.csv", stringsAsFactors = FALSE, header = TRUE)  #Was used for adding top-3 and bottom-3 regions but with small differences not too instructive
 region_data_charts <- st_read("./Data/region_data_charts.shp", stringsAsFactors = FALSE)
