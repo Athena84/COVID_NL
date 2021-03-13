@@ -1,13 +1,11 @@
 
 
-fluidPage(
+navbarPage(
+  theme = shinytheme("cerulean"),
+  title ="COVID measures in the Netherlands",
 
-  titlePanel("How do the Dutch feel about their government's COVID measures?"),
-  
-  br(),
-  tabsetPanel(
     #========== Tab 1
-    tabPanel(span("Geographical differences in support", title = "Choose one Covid measure and compare support between different regions in the Netherlands"), 
+    tabPanel(span("Regional differences in support", title = "Choose one Covid measure and compare support between different regions in the Netherlands"), 
       fluidRow(
         column(1),
         column(8,
@@ -102,7 +100,6 @@ fluidPage(
                       )
         ),
         column(1)
-    )
-    )
-  )
-)
+      )#close row
+    )#close tabpanel
+  )#close navbarpage

@@ -1,10 +1,12 @@
 
 #Libraries for the app
 library(shiny)
-library(ggplot2)
-library(dplyr)
+library(ggplot2) #for plotting
+library(dplyr) #for last steps data sorting
+library(sf) #for maps
+library(shinythemes)
+#library(bslib)
 library(viridisLite)
-library(sf)
 library(RColorBrewer)
 
 #Load datasets (pre-processing of raw data in datacleaner.R)

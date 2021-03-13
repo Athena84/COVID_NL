@@ -24,9 +24,20 @@ function(input, output){
                            name = "% of population in support of measure",
                            breaks = my_breaks,
                            labels = my_breaks,
-                           limits = c(30,100)) +
-      theme_void()
-  )
+                           limits = c(40,100)) +
+      theme(axis.line=element_blank(),
+            axis.text.x=element_blank(),
+            axis.text.y=element_blank(),
+            axis.ticks=element_blank(),
+            axis.title.x=element_blank(),
+            axis.title.y=element_blank(),
+            #legend.position="none",
+            panel.background=element_blank(),
+            panel.border=element_blank(),
+            panel.grid.major=element_blank(),
+            panel.grid.minor=element_blank(),
+            plot.background=element_blank())
+    )
   
   output$region1 <- renderPrint({
     top_regions() %>%
@@ -65,7 +76,7 @@ function(input, output){
         axis.text.x = element_text(size = 16, angle = 0),
         axis.text.y = element_text(size = 16),
         legend.text = element_text(size = 16),
-        legend.position = "bottom",
+        legend.position = "right",
         legend.title=element_blank()
       ) +
       ylim(0,100) +
@@ -86,7 +97,7 @@ function(input, output){
         axis.text.x = element_text(size = 16, angle = 0),
         axis.text.y = element_text(size = 16),
         legend.text = element_text(size = 16),
-        legend.position = "bottom",
+        legend.position = "right",
         legend.title=element_blank()
       ) +
       ylim(0,100) +
