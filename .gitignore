@@ -1,5 +1,6 @@
 data/
 www/
+rsconnect/
 .Rproj.user/
 .RData
 .RHistory
