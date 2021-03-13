@@ -1,16 +1,22 @@
 
-function(input, output){
+function(input, output, session){
 
-    top_regions <- reactive(
-    filter(region_data_lists, Measure == input$Measure_geo) %>%
-    arrange(., desc(Value)) %>%
-    select(., Region) 
-  )
-  bottom_regions <- reactive(
-    filter(region_data_lists, Measure == input$Measure_geo) %>%
-      arrange(., Value) %>%
-      select(., Region) 
-  )
+  #Links
+  observeEvent(input$link_tab1, {
+    updateNavbarPage(session, "tabs", "tab1")
+  })
+  observeEvent(input$link_tab2, {
+    updateNavbarPage(session, "tabs", "tab2")
+  })
+  observeEvent(input$link_tab3, {
+    updateNavbarPage(session, "tabs", "tab3")
+  })
+  observeEvent(input$link_tab4, {
+    updateNavbarPage(session, "tabs", "tab4")
+  })
+  observeEvent(input$link_tab5, {
+    updateNavbarPage(session, "tabs", "tab5")
+  })
   
   #====== tab1
   
@@ -39,37 +45,13 @@ function(input, output){
             plot.background=element_blank())
     )
   
-  output$region1 <- renderPrint({
-    top_regions() %>%
-      .[1, "Region"]
-  })
-  output$region2 <- renderPrint({
-    top_regions() %>%
-      .[2, "Region"]
-  })
-  output$region3 <- renderPrint({
-    top_regions() %>%
-      .[3, "Region"]
-  })
-  output$region4 <- renderPrint({
-    bottom_regions() %>%
-      .[1, "Region"]
-  })
-  output$region5 <- renderPrint({
-    bottom_regions() %>%
-      .[2, "Region"]
-  })
-  output$region6 <- renderPrint({
-    bottom_regions() %>%
-      .[3, "Region"]
-  })
   
   #======= tab 2
   
   output$Meas_beh_bysubgroup <- renderPlot(
     filter(meas_subset, (Subgroup_category == input$Subgroup_cat & Measure == input$Measure_comp)) %>%
       ggplot(data = ., aes(x = Date, y = Value, group = Subgroup, colour = Subgroup)) +
-      geom_line() +
+      geom_line(size = 1) +
       scale_color_brewer(palette = "Dark2") +
       theme_minimal() +
       theme(
@@ -90,7 +72,7 @@ function(input, output){
   output$Beh_subgroup_bymeasure <- renderPlot(
     filter(meas_subset, Subgroup == input$Subgroup_meas) %>%
       ggplot(data = ., aes(x = Date, y = Value, group = Measure, colour = Measure)) +
-      geom_line() +
+      geom_line(size = 1) +
       scale_color_brewer(palette = "Dark2") +
       theme_minimal() +
       theme(
@@ -105,7 +87,27 @@ function(input, output){
       ylab("")
   )
   
-  #======= tab4
+  #======= tab 4
+  
+  output$Att_subgroup_bymeasure <- renderPlot(
+    filter(att_subset, Subgroup == input$Subgroup_att & Measure == input$Measure_att) %>%
+      ggplot(data = ., aes(x = Date, y = Value, group = Attitude, colour = Attitude)) +
+      geom_line(size = 1) +
+      scale_color_brewer(palette = "Dark2") +
+      theme_minimal() +
+      theme(
+        axis.text.x = element_text(size = 16, angle = 0),
+        axis.text.y = element_text(size = 16),
+        legend.text = element_text(size = 16),
+        legend.position = "right",
+        legend.title=element_blank()
+      ) +
+      ylim(0,100) +
+      xlab("") +
+      ylab("")
+  )
+  
+  #======= tab5
   output$Vacc_Detail <- renderPlot(
     filter(vacc_will_subset, Subgroup == input$Subgroup_vacc) %>%
       group_by(Date) %>%
@@ -128,26 +130,6 @@ function(input, output){
       scale_fill_manual(values = c("#d1495b", "#8d96a3", "#00798c", "#66a182")) +
       geom_hline(yintercept = 80, linetype="dashed", color = "black") +
       geom_text(aes(0, 0.8, label = "80%", hjust = 10)) 
-  )
-  
-  #======= tab 5
-  
-  output$Att_subgroup_bymeasure <- renderPlot(
-    filter(att_subset, Subgroup == input$Subgroup_att & Measure == input$Measure_att) %>%
-      ggplot(data = ., aes(x = Date, y = Value, group = Attitude, colour = Attitude)) +
-      geom_line() +
-      scale_color_brewer(palette = "Dark2") +
-      theme_minimal() +
-      theme(
-        axis.text.x = element_text(size = 16, angle = 0),
-        axis.text.y = element_text(size = 16),
-        legend.text = element_text(size = 16),
-        legend.position = "right",
-        legend.title=element_blank()
-      ) +
-      ylim(0,100) +
-      xlab("") +
-      ylab("")
   )
   
   
