@@ -3,7 +3,7 @@ library(sf)
 
 #==========Load & prepare dataset
 #Load dataset, select relevant columns, encoding needs specification because of some special characters in Frysian names
-raw_df <- read.csv("./Data/Raw/Covid-19_gedrag.csv", stringsAsFactors = FALSE, header = TRUE, sep=";", encoding = "UTF-8") %>%
+raw_df <- read.csv("./RawData/Covid-19_gedrag.csv", stringsAsFactors = FALSE, header = TRUE, sep=";", encoding = "UTF-8") %>%
   select(., c(2, 4:9, 12))
 
 #Translate and shorten field names
@@ -108,7 +108,7 @@ vacc_will_subset <- filter(vacc_will_subset, Subgroup_category != "Region") %>%
 
 #==========Load map data and match to dataset regions
 #Load mapping data municipalities to security regions, encoding needs specification because of some special characters in Frysian names
-municipality_reg_mapping <- read.csv("./Data/Raw/Gebieden_in_Nederland_2018.csv", stringsAsFactors = FALSE, header = TRUE, sep = ";", encoding = "UTF-8") %>%
+municipality_reg_mapping <- read.csv("./RawData/Gebieden_in_Nederland_2018.csv", stringsAsFactors = FALSE, header = TRUE, sep = ";", encoding = "UTF-8") %>%
   select(., c(1, 4, 5))
 
 colnames(municipality_reg_mapping) <- c("Municipality", "Region_code", "Region")
