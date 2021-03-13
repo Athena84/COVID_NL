@@ -8,6 +8,8 @@ library(sf) #for maps
 #library(shinythemes)
 #library(viridisLite)
 #(RColorBrewer)
+library(rsconnect) #for publishing
+#rsconnect::deployApp('path/to/your/app')
 
 #Load datasets (pre-processing of raw data in datacleaner.R)
 vacc_will_subset <- read.csv("./Data/vacc_will.csv", stringsAsFactors = FALSE, header = TRUE)
