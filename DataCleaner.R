@@ -30,6 +30,7 @@ raw_df$Response_category <- gsub("Helpen_regels", "Belief_efficacy", raw_df$Resp
 raw_df$Response_category <- gsub("Moeite", "Difficulty", raw_df$Response_category, fixed = TRUE)
 raw_df$Response_category <- gsub("Naleving", "Adherence_self", raw_df$Response_category, fixed = TRUE)
 raw_df$Response_category <- gsub("Vaccinatiebereidheid", "Willingness_vaccination", raw_df$Response_category, fixed = TRUE)
+raw_df$Response <- gsub("Avondklok", "Curfew", raw_df$Response, fixed = TRUE)
 raw_df$Response <- gsub("Bij_klachten_blijf_thuis", "Symptoms_quarantine", raw_df$Response, fixed = TRUE)
 raw_df$Response <- gsub("Bij_klachten_laat_testen", "Symptoms_test", raw_df$Response, fixed = TRUE)
 raw_df$Response <- gsub("Draag_mondkapje_in_ov", "Mask_public_transport", raw_df$Response, fixed = TRUE)
@@ -48,7 +49,7 @@ raw_df$Response <- gsub("Al_gevaccineerd", "Already vaccinated", raw_df$Response
 raw_df <-  filter(raw_df, !(Region == "Nederland" & Subgroup_category == "Alle"))
 
 #Remove some measures with insufficient data or not so interesting outcomes
-raw_df <- filter(raw_df, !(Response %in% c("Avondklok", "Hoest_niest_in_elleboog", "Thuisgewerkte_uren", "Wash_hands_frequently", "Mask_public_transport", "Symptoms_quarantine",  "Symptoms_test", "Avoid_crowds")))
+raw_df <- filter(raw_df, !(Response %in% c("Hoest_niest_in_elleboog", "Thuisgewerkte_uren", "Wash_hands_frequently", "Mask_public_transport", "Symptoms_quarantine",  "Symptoms_test", "Avoid_crowds")))
 
 #Combine region as a subgroup similar to structure of age/gender/education
 raw_df$Subgroup_category <- ifelse(raw_df$Subgroup_category == "Alle", "Region", raw_df$Subgroup_category)
@@ -58,7 +59,18 @@ raw_df$Subgroup <- ifelse(raw_df$Subgroup == "Totaal", raw_df$Region, raw_df$Sub
 raw_df <- select(raw_df, c("Date", "Region_code", "Subgroup_category", "Subgroup", "Response_category", "Response", "Value"))
 
 
-#==========Store subset regarding measures
+#==========Store separate subset regarding attitudes towards measures
+
+#Filter out vaccination (as only support attitude known) and filter interesting response categories
+#Remove region as subgroup and column
+meas_att_subset <- filter(raw_df, Response != "Willing") %>%
+  filter(., (Response_category == "Support" | Response_category == "Adherence_observed" | Response_category == "Adherence_self")) %>%
+  filter(., Subgroup_category != "Region") %>%
+  select(., c("Date", "Subgroup_category", "Subgroup", Attitude = "Response_category", Measure = "Response", "Value"))
+
+
+#==========Store separate subset regarding support for measures only
+
 #Filter response category
 meas_supp_subset <- filter(raw_df, Response_category == "Support")
 
@@ -89,6 +101,10 @@ vacc_will_subset <- left_join(vacc_will_subset, vacc_will_corrections, by = c("D
   select(., c("Date", "Region_code", "Subgroup_category", "Subgroup", "Response", "Value")) %>%
   filter(., Value != 0)
 
+#Remove region as subgroup and column
+vacc_will_subset <- filter(vacc_will_subset, Subgroup_category != "Region") %>%
+  select(.,c("Date", "Subgroup_category", "Subgroup", "Response", "Value"))
+
 
 #==========Load map data and match to dataset regions
 #Load mapping data municipalities to security regions, encoding needs specification because of some special characters in Frysian names
@@ -115,25 +131,23 @@ region_borders <- left_join(municipalities_borders, municipality_reg_mapping, by
 
 #Match measure support for the last period per security region 
 region_data_charts <- filter(meas_supp_subset, Subgroup_category == "Region") %>%
-  filter(., Date == "2021-01-25") %>%
+  filter(., Date == "2021-02-15") %>%
   select(., c("Region_code", Measure = "Response", "Value")) %>%
   left_join(region_borders, ., by = c("Region_code")) %>%
   select(., c("Region", "Measure", "Value"))
 
 #Save regional split for last period as separate data file
-region_data_lists <- filter(meas_supp_subset, Subgroup_category == "Region" & Date == "2021-01-25") %>%
+region_data_lists <- filter(meas_supp_subset, Subgroup_category == "Region" & Date == "2021-02-15") %>%
   select(., c(Region = "Subgroup", Measure = "Response", "Value"))
 
-#Remove region as subgroup and column from vaccine and measures subsets
-vacc_will_subset <- filter(vacc_will_subset, Subgroup_category != "Region") %>%
-  select(.,c("Date", "Subgroup_category", "Subgroup", "Response", "Value"))
-
+#Remove region as subgroup and column from measures subset
 meas_supp_subset <- filter(meas_supp_subset, Subgroup_category != "Region") %>%
   select(., c("Date", "Subgroup_category", "Subgroup", Measure = "Response", "Value"))
 
 
 #==========Write to smaller files for Shiny app
 write.csv(meas_supp_subset, "./Data/measures_sup.csv", row.names = FALSE)
+write.csv(meas_att_subset, "./Data/measures_att.csv", row.names = FALSE)
 write.csv(vacc_will_subset, "./Data/vacc_will.csv", row.names = FALSE)
 write.csv(region_data_lists, "./Data/region_data_lists.csv", row.names = FALSE)
 st_write(region_data_charts, "./Data/region_data_charts.shp", append = FALSE)

@@ -130,4 +130,25 @@ function(input, output){
       geom_text(aes(0, 0.8, label = "80%", hjust = 10)) 
   )
   
-}
+  #======= tab 5
+  
+  output$Att_subgroup_bymeasure <- renderPlot(
+    filter(att_subset, Subgroup == input$Subgroup_att & Measure == input$Measure_att) %>%
+      ggplot(data = ., aes(x = Date, y = Value, group = Attitude, colour = Attitude)) +
+      geom_line() +
+      scale_color_brewer(palette = "Dark2") +
+      theme_minimal() +
+      theme(
+        axis.text.x = element_text(size = 16, angle = 0),
+        axis.text.y = element_text(size = 16),
+        legend.text = element_text(size = 16),
+        legend.position = "right",
+        legend.title=element_blank()
+      ) +
+      ylim(0,100) +
+      xlab("") +
+      ylab("")
+  )
+  
+  
+} #close function

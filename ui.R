@@ -101,5 +101,29 @@ navbarPage(
         ),
         column(1)
       )#close row
-    )#close tabpanel
-  )#close navbarpage
+    ),#close tabpanel
+  
+  #========== Tab 5
+  tabPanel(span("Compare behavior", title = "Choose one specific group of people and compare their behavior towards different measures"),
+           fluidRow(
+             column(1),
+             column(8,       
+                    br(),
+                    plotOutput("Att_subgroup_bymeasure"),
+                    br(),
+                    br(),
+                    selectInput(inputId = 'Subgroup_att',
+                                label = 'Behavior over time for specific group',
+                                choices = unique(att_subset$Subgroup),
+                                selected = "Aged 16-24"
+                    ),
+                    selectInput(inputId = 'Measure_att',
+                                label = 'Behavior over time towards measure',
+                                choices = unique(att_subset$Measure),
+                                selected = "Max_guests_@home"
+                    )
+             ),
+             column(1)
+           )#close row
+  )#close tabpanel
+)#close navbarpage
