@@ -5,22 +5,23 @@ navbarPage(
   title ="",
 
     #========== Landing page
-    tabPanel(span("NL COVID measures", title = "Background of this visualization"),
+    tabPanel(span("NL COVID vaccination", title = "Background of this visualization"),
       fluidRow(
         column(1),
         column(8,
-               h2("What do the Dutch really think about the COVID measures of their government?"),
-               "The topic dominates many conversations. Yet, different figures seem to circulate and sources are usually unclear.", br(),
-               "The RIVM institute publishes high-quality representative survey data every couple of weeks, although in a rather technical table format. This project visualizes that data to make it much more accessible.", br(),
+               h2("Will the Dutch population reach the 70% - 80% vaccination rate experts think is critical?"),
+               "The topic dominates many conversations. Many controversies circulate. The Dutch government principally doesn't want to oblige the population to get vaccinated. Also this would be difficult if not impossible in the legal framework. Will the Netherlands reach a vaccination level high enough without obligation?", br(),
+               br(),
+               "The RIVM institute publishes high-quality representative survey data every couple of weeks regarding the COVID measures including vaccination, albeit in a rather technical table format. This project visualizes that data to give direction to the following questions.", br(),
                br(),
                tags$ul(
-                 tags$li(actionLink("link_tab1", "Is support for the measures different in the big cities versus the rest of the country?")),
-                 tags$li(actionLink("link_tab2","Are older people more supportive of the measures then young people?")),
-                 tags$li(actionLink("link_tab3","Is support for the meausres going down? For all measures or only some of them?")),
-                 tags$li(actionLink("link_tab4","Is supporting a measure the same as adhering to it?")),
-                 tags$li(actionLink("link_tab5","Will the Dutch population reach the 80% vaccination rate experts think is required?"))
+                 tags$li(actionLink("link_tab1", "Did the recent campaign work? What part of the Dutch population is expected to accept vaccination?")),
+                 tags$li(actionLink("link_tab2","Should a campaign focus on certain geographical regions?")),
+                 tags$li(actionLink("link_tab3","Should a campaign focus on certain subgroups of the population?")),
+                 tags$li(actionLink("link_tab4","Is supporting vaccination the same as actually taking it?")),
+                 tags$li(actionLink("link_tab5","Is there an effect of other COVID measures on acceptance of vaccination?"))
                ),
-               "The visualizations are interactive so you can explore the data for yourself to answer these questions and more.", br()
+               "The visualizations are interactive so you can explore the data for yourself to answer related questions regarding the attitudes towards COVID measures.", br()
         ),
         column(2,
                br(),
@@ -54,9 +55,47 @@ navbarPage(
   
   
     #========== Tab 1
-    tabPanel(value = "tab1",
-        span("Compare regions", title = "Choose one Covid measure and compare support between different regions in the Netherlands"), 
-        fluidRow(
+    tabPanel(
+      value = "tab1",
+      span("Vaccination willingness details", title = "Explore the details of vaccination willingness"),
+      fluidRow(
+        column(1),
+        column(10,       
+               br(),
+               h2("Will the Dutch population reach the critical 80% treshold vaccination level?"),
+               br(),
+               plotOutput("Vacc_Detail"),
+               br(),
+               br(),
+               selectInput(inputId = 'Subgroup_vacc',
+                           label = 'Willingness over time for specific group',
+                           choices = unique(vacc_will_subset$Subgroup),
+                           selected = "Total Population"
+               )
+        ),
+        column(1)
+      ), #close row
+      fluidRow(
+        column(1),
+        column(10,
+               h4("Explanation"),
+               "Percentage of the sample (not) being willing to take the vaccination as reported in all cohorts of the survey.", br(),
+               "Split based on based on the subgroups of the population representated in the survey.", br(),
+               br(),
+               "Note that in November and December there was a campaign by the Dutch government to promote vaccine safety", br(),
+               br(),
+               "Data source (Dutch): ", a("RIVM", href = "https://www.rivm.nl/gedragsonderzoek/maatregelen-welbevinden/over-dit-onderzoek")
+        ),
+        column(1)
+      ) #close row 
+    ),#close tab
+    
+    #========== Tab 2      
+    tabPanel(
+      value = "tab2",
+      
+      span("Compare regions", title = "Choose one Covid measure and compare support between different regions in the Netherlands"), 
+      fluidRow(
         
         column(1),
         column(10,
@@ -86,27 +125,28 @@ navbarPage(
       ) #close row
     ), #close tab
     
-    #========== Tab 2      
+    #========== Tab 3
     tabPanel(
-      value = "tab2",
+      value = "tab3",
+      
       span("Compare groups of people", title = "Choose one Covid measure and compare the support of groups of people based on their age, gender of level of education"),
       fluidRow(
         column(1),
         column(10,
-          br(),
-          plotOutput("Meas_beh_bysubgroup"),
-          br(),
-          br(),
-          selectInput(inputId = 'Subgroup_cat',
-                      label = 'Compare between groups based on',
-                      choices = c("Age", "Gender", "Education level"),
-                      selected = "Age"
-                      ),
-          selectInput(inputId = 'Measure_comp',
-                      label = 'Compare support for',
-                      choices = unique(meas_subset$Measure), 
-                      selected = "Vaccination"
-                      )
+               br(),
+               plotOutput("Meas_beh_bysubgroup"),
+               br(),
+               br(),
+               selectInput(inputId = 'Subgroup_cat',
+                           label = 'Compare between groups based on',
+                           choices = c("Age", "Gender", "Education level"),
+                           selected = "Age"
+               ),
+               selectInput(inputId = 'Measure_comp',
+                           label = 'Compare support for',
+                           choices = unique(meas_subset$Measure), 
+                           selected = "Vaccination"
+               )
         ),
         column(1)
       ), #close row
@@ -122,23 +162,66 @@ navbarPage(
         column(1)
       ) #close row
     ), #close tab
+      
+#========== Tab 4
+  
+  tabPanel(
+    value = "tab4",
     
-    #========== Tab 3
+    span("Compare behavior", title = "Choose one specific group of people and one specific measure and compare actual behavior with support"),
+           fluidRow(
+             column(1),
+             column(10,       
+                    br(),
+                    plotOutput("Att_subgroup_bymeasure"),
+                    br(),
+                    br(),
+                    selectInput(inputId = 'Subgroup_att',
+                                label = 'Behavior over time for specific group',
+                                choices = unique(att_subset$Subgroup),
+                                selected = "Total population"
+                    ),
+                    selectInput(inputId = 'Measure_att',
+                                label = 'Behavior over time towards measure',
+                                choices = unique(att_subset$Measure),
+                                selected = "Social_distancing"
+                    )
+             ),
+             column(1)
+           ), #close row
+           fluidRow(
+             column(1),
+             column(10,
+                    h4("Explanation"),
+                    "Adherence in percentage for respondent and environment of respondent with regards to the main COVID measures for all cohorts in the survey.", br(),
+                    "Please note that this is self-reported adherence, so in reality the differences might be even larger.", br(),
+                    "Split based on the subgroups of the population representated in the survey.", br(),
+                    br(),
+                    "Data source (Dutch): ", a("RIVM", href = "https://www.rivm.nl/gedragsonderzoek/maatregelen-welbevinden/over-dit-onderzoek")
+             ),
+             column(1)
+           ) #close row
+  ), #close tab
+  
+  
+    #========== Tab 5
+    
     tabPanel(
-      value = "tab3",
+      value = "tab5",
+      
       span("Compare measures", title = "Choose one specific group of people and compare their support for different measures"),
       fluidRow(
         column(1),
         column(10,       
-          br(),
-          plotOutput("Beh_subgroup_bymeasure"),
-          br(),
-          br(),
-          selectInput(inputId = 'Subgroup_meas',
-                      label = 'Support over time for specific group',
-                      choices = unique(meas_subset$Subgroup),
-                      selected = "Aged 16-24"
-                      )
+               br(),
+               plotOutput("Beh_subgroup_bymeasure"),
+               br(),
+               br(),
+               selectInput(inputId = 'Subgroup_meas',
+                           label = 'Support over time for specific group',
+                           choices = unique(meas_subset$Subgroup),
+                           selected = "Aged 16-24"
+               )
         ),
         column(1)
       ), #close row
@@ -153,81 +236,6 @@ navbarPage(
         ),
         column(1)
       ) #close row
-    ), #close tab
-    
-  #========== Tab 4
-  
-  tabPanel(
-    value = "tab4",
-    span("Compare behavior", title = "Choose one specific group of people and one specific measure and compare actual behavior with support"),
-           fluidRow(
-             column(1),
-             column(10,       
-                    br(),
-                    plotOutput("Att_subgroup_bymeasure"),
-                    br(),
-                    br(),
-                    selectInput(inputId = 'Subgroup_att',
-                                label = 'Behavior over time for specific group',
-                                choices = unique(att_subset$Subgroup),
-                                selected = "Aged 16-24"
-                    ),
-                    selectInput(inputId = 'Measure_att',
-                                label = 'Behavior over time towards measure',
-                                choices = unique(att_subset$Measure),
-                                selected = "Max_guests_@home"
-                    )
-             ),
-             column(1)
-           ), #close row
-           fluidRow(
-             column(1),
-             column(10,
-                    h4("Explanation"),
-                    "Reported adherence in percentage for respondent and environment of respondent with regards to the main COVID measures for all cohorts in the survey", br(),
-                    "Split based on the subgroups of the population representated in the survey.", br(),
-                    br(),
-                    "Data source (Dutch): ", a("RIVM", href = "https://www.rivm.nl/gedragsonderzoek/maatregelen-welbevinden/over-dit-onderzoek")
-             ),
-             column(1)
-           ) #close row
-  ), #close tab
-  
-  
-    #========== Tab 5
-    
-    tabPanel(
-      value = "tab5",
-      span("Vaccination willingness details", title = "Explore the details of vaccination willingness"),
-      fluidRow(
-        column(1),
-        column(10,       
-          br(),
-          h2("Will the Dutch population reach the critical 80% treshold vaccination level?"),
-          br(),
-          plotOutput("Vacc_Detail"),
-          br(),
-          br(),
-          selectInput(inputId = 'Subgroup_vacc',
-                      label = 'Willingness over time for specific group',
-                      choices = unique(vacc_will_subset$Subgroup),
-                      selected = "Aged 16-24"
-                      )
-        ),
-        column(1)
-      ), #close row
-      fluidRow(
-        column(1),
-        column(10,
-               h4("Explanation"),
-               "Percentage of the sample (not) being willing to take the vaccination as reported in all cohorts of the survey.", br(),
-               "Split based on based on the subgroups of the population representated in the survey.", br(),
-               br(),
-               "Note that in November and December there was a campaign by the Dutch government to promote vaccine safety", br(),
-               "Data source (Dutch): ", a("RIVM", href = "https://www.rivm.nl/gedragsonderzoek/maatregelen-welbevinden/over-dit-onderzoek")
-        ),
-        column(1)
-      ) #close row
     ) #close tab
-             
+
 )#close navbarpage

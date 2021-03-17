@@ -137,8 +137,8 @@ region_data_charts <- filter(meas_supp_subset, Subgroup_category == "Region") %>
   select(., c("Region", "Measure", "Value"))
 
 #Save regional split for last period as separate data file
-region_data_lists <- filter(meas_supp_subset, Subgroup_category == "Region" & Date == "2021-02-15") %>%
-  select(., c(Region = "Subgroup", Measure = "Response", "Value"))
+#region_data_lists <- filter(meas_supp_subset, Subgroup_category == "Region" & Date == "2021-02-15") %>% #Was used for top-3 and bottom-3 regions, but differences are too small to be very interesting
+ # select(., c(Region = "Subgroup", Measure = "Response", "Value"))
 
 #Remove region as subgroup and column from measures subset
 meas_supp_subset <- filter(meas_supp_subset, Subgroup_category != "Region") %>%
@@ -149,5 +149,5 @@ meas_supp_subset <- filter(meas_supp_subset, Subgroup_category != "Region") %>%
 write.csv(meas_supp_subset, "./Data/measures_sup.csv", row.names = FALSE)
 write.csv(meas_att_subset, "./Data/measures_att.csv", row.names = FALSE)
 write.csv(vacc_will_subset, "./Data/vacc_will.csv", row.names = FALSE)
-write.csv(region_data_lists, "./Data/region_data_lists.csv", row.names = FALSE)
+#write.csv(region_data_lists, "./Data/region_data_lists.csv", row.names = FALSE)
 st_write(region_data_charts, "./Data/region_data_charts.shp", append = FALSE)
